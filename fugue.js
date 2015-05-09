@@ -2,6 +2,7 @@
 
 const toposort = require('toposort');
 var isObjectEmpty = require('is-object-empty');
+var Rx = require('rx');
 
 var declaration = {
     'users': {
@@ -39,48 +40,45 @@ class Fugue {
     constructor(declaration) {
         this._declaration = declaration;
         this.data = declaration;
-        this.tasks = {};
-        this.taskIds = [];
-        this.executingTasks = false;
-        this.taskCount = 0;
+        this.makeTaskStream();
+        this.listenForTasks();
         // this.data = this.computeData(callback);
     }
 
-    addTask(task) {
-        let taskId = this.taskCount;
-        this.taskCount++;
-        this.tasks[taskId] = task;
-        this.taskIds.push(taskId);
-        if(!this.executingTasks) {
-            process.nextTick(this.executeTasks.bind(this));
-        }
-        return taskId;
+    makeTaskStream() {
+        this.tasks = Rx.Observable.create((observer) => {
+            this.taskStreamObserver = observer;
+            return function () {
+                console.log('disposed');
+            };
+        });
     }
 
-    executeTasks() {
-        this.executingTasks = true;
-        while(this.taskIds.length > 0) {
-            let taskId = this.taskIds[0];
-            let task = this.tasks[taskId];
-            console.log("EXECUTING TASK", taskId);
+    listenForTasks() {
+        this.tasks.subscribe((task) => {
+            console.log("EXECUTING TASK");
             task();
-            console.log("FINISHED TASK", taskId);
-            delete this.tasks[taskId];
-            this.taskIds.shift();
-        }
-        this.executingTasks = false;
+            console.log("COMPLETED TASK");
+        });
     }
 
     getValue(key) {
         return this.data[key]['computed_value'];
     }
 
-    setValue(key, value) {
-        let taskId = this.addTask(() => {
-            this.data[key]['value'] = value;
-            this.computeData();
-        });
-        return taskId;
+    setValue(key, value, block=false) {
+        let nextTask = () => {
+            this.taskStreamObserver.onNext(() => {
+                this.data[key]['value'] = value;
+                this.computeData();
+            });
+        };
+        if(!block) {
+            process.nextTick(nextTask);
+        } else {
+            nextTask();
+        }
+        return 'ADDED TASK';
     }
 
     computeData(callback) {

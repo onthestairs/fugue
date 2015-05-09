@@ -34,11 +34,11 @@ const declaration = {
 
 var f = new Fugue(declaration);
 
-var taskId = f.setValue('users', [{id: 1, name: "bethany"}, {id: 2, name: "alice"}, {id: 3, name: "carly"}]);
+var taskId = f.setValue('users', [{id: 1, name: "bethany"}, {id: 2, name: "alice"}, {id: 3, name: "carly"}], true);
 
 console.log(taskId);
 
-taskId = f.setValue('users', [{id: 1, name: "aust"}, {id: 2, name: "jeff"}]);
+taskId = f.setValue('users', [{id: 1, name: "aust"}, {id: 2, name: "jeff"}], true);
 
 console.log(taskId);
 

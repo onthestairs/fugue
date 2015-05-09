@@ -12,6 +12,7 @@
     "toposort": "~0.2.10",
     "gaia-tsort": "~0.1.0",
     "is-object-empty": "~1.0.0",
-    "babel": "~5.2.17"
+    "babel": "~5.2.17",
+    "rx": "~2.5.2"
   }
 }
