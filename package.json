@@ -1,0 +1,17 @@
+{
+  "name": "fugue",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "toposort": "~0.2.10",
+    "gaia-tsort": "~0.1.0",
+    "is-object-empty": "~1.0.0",
+    "babel": "~5.2.17"
+  }
+}
